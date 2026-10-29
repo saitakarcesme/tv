@@ -151,7 +151,7 @@ public final class MainActivity extends Activity {
     @Override protected void onDestroy() {
         clockHandler.removeCallbacks(clockTick);
         if(movement!=null) movement.cancel();
-        if(hero!=null)hero.generation++;
+
         super.onDestroy();
     }
     @Override protected void onSaveInstanceState(Bundle state) {
@@ -344,11 +344,11 @@ public final class MainActivity extends Activity {
         Panel(int index){
             super(MainActivity.this);this.index=index;
             BitmapFactory.Options options=new BitmapFactory.Options();options.inScaled=false;
-            background=BitmapFactory.decodeResource(getResources(),BACKGROUNDS[index],options);
+            background=null;
             logo=LOGOS[index]==0?null:BitmapFactory.decodeResource(getResources(),LOGOS[index],options);
             cardLogo=logo;
             try {
-                if(index==4||index==5)official=getDrawable(index==4?R.drawable.promo_google:R.drawable.promo_playstation);
+                if(index==4||index==5)official=null;
                 else {official=getPackageManager().getApplicationBanner(PACKAGES[index]);if(official==null)official=getPackageManager().getApplicationIcon(PACKAGES[index]);}
             } catch(Exception ignored){}
             type.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));
@@ -360,7 +360,7 @@ public final class MainActivity extends Activity {
         @Override protected void onSizeChanged(int width,int height,int oldWidth,int oldHeight){
             w=width/stage.unit;h=height/stage.unit;
             bounds.set(0,0,w,h);clip.reset();clip.addRoundRect(bounds,26,26,Path.Direction.CW);
-            crop(background,w,h,index,imageBounds);
+
         }
         @Override protected void onDraw(Canvas c){
             if(w<=0||h<=0)return;
@@ -370,6 +370,15 @@ public final class MainActivity extends Activity {
             paint.setStyle(Paint.Style.FILL);paint.setColorFilter(null);paint.setAlpha(255);
             // Draw the publisher's complete asset, including its own background.
             // No fabricated brand color, stretching or logo overlay.
+            if(index>=4){
+                RectF tile=new RectF(6,6,w-6,h-6);
+                if(index==4)paint.setColor(Color.WHITE);
+                else paint.setShader(new LinearGradient(6,6,w,h,new int[]{0xff007fc4,0xff00448c,0xff002b66},null,Shader.TileMode.CLAMP));
+                c.drawRoundRect(tile,18,18,paint);paint.setShader(null);
+                drawMark(c,this,w*.12f,h*.22f,w*.76f,h*.56f,paint,type);
+                if(isFocused()){paint.setStyle(Paint.Style.STROKE);paint.setStrokeWidth(2);paint.setColor(Color.WHITE);c.drawRoundRect(2,2,w-2,h-2,22,22,paint);}
+                paint.setStyle(Paint.Style.FILL);c.restore();return;
+            }
             float aw=official==null?cardLogo.getWidth():Math.max(1,official.getIntrinsicWidth());
             float ah=official==null?cardLogo.getHeight():Math.max(1,official.getIntrinsicHeight());
             float scale=Math.min((w-12)/aw,(h-12)/ah),lw=aw*scale,lh=ah*scale;
@@ -387,79 +396,13 @@ public final class MainActivity extends Activity {
         }
     }
     private final class Hero extends View {
-        private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
+        private final Paint paint=new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Paint type=new Paint(Paint.ANTI_ALIAS_FLAG);
-        private final RectF bounds=new RectF();
-        private final RectF[] images=new RectF[6];
-        private final Path clip=new Path();
-        private Shader shade;
-        private float w,h;
-        private final Bitmap[] frames=new Bitmap[6];
-        private int generation;
-        Hero(){
-            super(MainActivity.this);setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            setClipToOutline(true);
-            setOutlineProvider(new ViewOutlineProvider(){
-                @Override public void getOutline(View view,Outline outline){
-                    outline.setRoundRect(0,0,getWidth(),getHeight(),0);
-                }
-            });
-        }
-        @Override protected void onSizeChanged(int width,int height,int oldWidth,int oldHeight){
-            w=width/stage.unit;h=height/stage.unit;
-            bounds.set(0,0,w,h);clip.reset();clip.addRoundRect(bounds,0,0,Path.Direction.CW);
-            shade=new LinearGradient(0,h*.20f,0,h,new int[]{0x000b0e12,0xdd0b0e12},null,Shader.TileMode.CLAMP);
-            type.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));
-            for(int i=0;i<6;i++){images[i]=new RectF();crop(panels[i].background,w,h,i,images[i]);}
-            invalidateOutline();
-            final int epoch=++generation,first=selected;
-            final float artWidth=w,artHeight=h;
-            Arrays.fill(frames,null);
-            // Flatten the fixed artwork, shading and logo once off the UI thread.
-            // Animation then blends two textures instead of rendering offscreen layers.
-            new Thread(()->{
-                Paint imagePaint=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG);
-                Paint labelPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
-                RectF imageRect=new RectF(),area=new RectF(0,0,artWidth,artHeight);
-                Shader gradient=new LinearGradient(0,artHeight*.20f,0,artHeight,
-                    new int[]{0x000b0e12,0xdd0b0e12},null,Shader.TileMode.CLAMP);
-                for(int step=0;step<6;step++){
-                    final int i=(first+step)%6;
-                    final Bitmap frame;
-                    try{frame=Bitmap.createBitmap(Math.round(artWidth),Math.round(artHeight),Bitmap.Config.ARGB_8888);}
-                    catch(OutOfMemoryError error){return;}
-                    Canvas surface=new Canvas(frame);
-                    crop(panels[i].background,artWidth,artHeight,i,imageRect);
-                    imagePaint.setAlpha(255);imagePaint.setShader(null);imagePaint.setColorFilter(null);
-                    surface.drawBitmap(panels[i].background,null,imageRect,imagePaint);
-                    imagePaint.setShader(gradient);surface.drawRect(area,imagePaint);imagePaint.setShader(null);
-                    drawMark(surface,panels[i],artWidth*.05f,artHeight*.54f,artWidth*.24f,artHeight*.20f,imagePaint,labelPaint);
-                    frame.setHasAlpha(false);frame.prepareToDraw();
-                    post(()->{if(epoch==generation){frames[i]=frame;invalidate();}});
-                }
-            },"Ev-Artwork-cache").start();
-        }
+        Hero(){super(MainActivity.this);setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);}
         @Override protected void onDraw(Canvas c){
-            if(w<=0||h<=0)return;
-            c.save();c.scale(stage.unit,stage.unit);
-            // Normalize source-over alpha so the middle of a crossfade does not dim.
-            // Starting from current weights also makes rapid remote presses continuous.
-            float total=0;
-            for(int i=0;i<6;i++){
-                float weight=weights[i];if(weight<.001f)continue;
-                int alpha=Math.min(255,Math.round(255*weight/(total+weight)));total+=weight;
-                if(frames[i]!=null){
-                    paint.setShader(null);paint.setColorFilter(null);paint.setStyle(Paint.Style.FILL);paint.setAlpha(alpha);
-                    c.drawBitmap(frames[i],null,bounds,paint);continue;
-                }
-                int layer=alpha==255?-1:c.saveLayerAlpha(bounds,alpha);
-                paint.setShader(null);paint.setColorFilter(null);paint.setStyle(Paint.Style.FILL);paint.setAlpha(255);
-                c.drawBitmap(panels[i].background,null,images[i],paint);
-                paint.setShader(shade);c.drawRect(bounds,paint);paint.setShader(null);
-                drawMark(c,panels[i],w*.05f,h*.54f,w*.24f,h*.20f,paint,type);
-                if(layer!=-1)c.restoreToCount(layer);
-            }
-            c.restore();
+            // A neutral first-load surface, never the retired static posters.
+            c.drawColor(0xff080d16);
+
         }
     }
     private static void crop(Bitmap image,float w,float h,int index,RectF out){

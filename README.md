@@ -8,7 +8,7 @@ A cinematic, remote-first home screen for Fire TV. Six destinations, live motion
 
 YouTube · Prime Video · Netflix · Disney+ · Google · PlayStation
 
-- **One focused surface.** A full-screen motion preview and floating navigation panel with equal-width landscape cards. Installed streaming apps supply their original TV banners; Google and PlayStation use official promotional images. No sponsored content rows in this launcher.
+- **One focused surface.** A full-screen motion preview and floating navigation panel with equal-width landscape cards. Installed streaming apps supply their original TV banners; Google uses its color wordmark on white; PlayStation uses its white lockup on a blue gradient. No sponsored content rows in this launcher.
 - **Made for a remote.** D-pad navigation, a visible focus ring, and access to the original TV settings and Amazon Home.
 - **Local playback.** One muted hardware video decoder; cached clips rotate without a computer or local server.
 - **Independent refresh.** The optional ARMv7 runtime checks official channels daily, requests native 1080p H.264, validates files, and keeps three HD clips per destination. Failed downloads retain the cache.

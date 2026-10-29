@@ -21,3 +21,7 @@ The optional nature loop was verified as H.264, 1920 × 1080, 30.03 seconds, wit
 A subsequent reboot with the full accessibility component name retained Home routing and automatically resumed the launcher in 41.8 s (baseline 46.5 s), with boot completion at 37.6 s. This is a single successful comparison, not proof of a general cold-boot speedup.
 
 1080p describes the selected stream, not the detail in every shot: official documentary trailers may contain soft archival footage. No synthetic upscaling is presented as recovered detail.
+
+## Version 2.8
+
+Google now uses its original color wordmark on white; PlayStation uses its white wordmark on a blue gradient. Retired posters are no longer decoded or shown. The preview retains a captured video frame while the next local clip prepares, using one video decoder. PlayStation discovery uses the official channel RSS feed and accepts gameplay titles, with the publisher's Gran Turismo 7 Deep Forest Raceway gameplay as an initial seed. A successful gameplay download replaces the previous cinematic cache; failed downloads retain existing files.
