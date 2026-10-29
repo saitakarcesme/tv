@@ -1,0 +1,13 @@
+build/
+lib/
+assets/clips/
+assets/refresh/yt-dlp
+assets/refresh/ejs.zip
+*.apk
+*.idsig
+*.p12
+*.jks
+*.keystore
+.env*
+__pycache__/
+.DS_Store

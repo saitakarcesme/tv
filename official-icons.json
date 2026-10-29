@@ -1,0 +1,18 @@
+{
+  "sources": {
+    "youtube": "https://play.google.com/store/apps/details?id=com.google.android.youtube&hl=en",
+    "prime": "https://play.google.com/store/apps/details?id=com.amazon.avod.thirdpartyclient&hl=en",
+    "netflix": "https://play.google.com/store/apps/details?id=com.netflix.mediaclient&hl=en",
+    "disney": "https://play.google.com/store/apps/details?id=com.disney.disneyplus&hl=en",
+    "google": "https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox&hl=en",
+    "playstation": "https://play.google.com/store/apps/details?id=com.scee.psxandroid&hl=en"
+  },
+  "images": {
+    "youtube": "https://play-lh.googleusercontent.com/QNmuZQc9I6Zbe3mWnSr0hycnENqGFCI5p3yE29Hkxtf22T0IWS6zTrpxULLyyjWpB7ONAXDsDQXnXcVWokl3eg",
+    "prime": "https://play-lh.googleusercontent.com/NnoDzfxkvlsAvU8jzoPeK8aaxbcU2sEH_btwgMQ2xI88_qtrNGQuf1vlFkxSiQODyKVFZ3-s71sU1MHyV-vc9Q",
+    "netflix": "https://play-lh.googleusercontent.com/fXVS45nukV1x9PYVSKHkCQK0QGCOishIvAOxIZS3sgRem8HS7l9l94_Ggj-WZPrTLePRdNYN4pp4SPAQL7oS0PU",
+    "disney": "https://play-lh.googleusercontent.com/AEX_3Bk5_SEZfR4fUcJsWiyqW_RRVcLED9AM2HMUVHAPVTZhZHfP2q3M35mRe4LtCXlb712DtkKwkZa_nJ-0",
+    "google": "https://play-lh.googleusercontent.com/xqk8hd6dMyffxE6iQa59cUt75EA-0YDvjnJlxH4z8W63-e5KwaWXbrNob6Q-OoH5SSDa78Y0I0YA3BB0zDVnB8w",
+    "playstation": "https://play-lh.googleusercontent.com/3Y2xJ77Ucj7Ovxf12AbJszkAqttbJfiO7DOjK9NO8vQn57Rar8uhkgcwbXFu2k7eXZR-Z0_Nbo8NWKfZjkDsRQ"
+  }
+}

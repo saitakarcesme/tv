@@ -1,0 +1,8 @@
+{
+  "runtime": "https://github.com/yausername/youtubedl-android",
+  "runtimeVersion": "0.18.1",
+  "downloader": "https://github.com/yt-dlp/yt-dlp/releases/tag/2026.10.26",
+  "ejs": "yt-dlp-ejs 0.8.0",
+  "pythonAbi": "armeabi-v7a",
+  "usage": "bundled native executables; own Java launcher and job service"
+}

@@ -1,0 +1,9 @@
+I rebuilt my TV's home screen.
+
+Six destinations. Cinematic motion previews. A quiet ambient clock. One-click HDMI.
+
+Trailers refresh on the TV itself — no computer left running.
+
+Built for a remote, with the original TV settings still one click away.
+
+Source: https://github.com/saitakarcesme/tv
