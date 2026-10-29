@@ -8,11 +8,11 @@ A cinematic, remote-first home screen for Fire TV. Six destinations, live motion
 
 YouTube · Prime Video · Netflix · Disney+ · Google · PlayStation
 
-- **One focused surface.** A wide motion preview, subtle color ambience, and a slim navigation dock using equally sized official app icons with their original backgrounds. No sponsored content rows in this launcher.
+- **One focused surface.** A full-screen motion preview and floating navigation panel with equal-width landscape cards. Installed streaming apps supply their original TV banners; Google and PlayStation use official promotional images. No sponsored content rows in this launcher.
 - **Made for a remote.** D-pad navigation, a visible focus ring, and access to the original TV settings and Amazon Home.
 - **Local playback.** One muted hardware video decoder; cached clips rotate without a computer or local server.
 - **Independent refresh.** The optional ARMv7 runtime checks official channels daily, requests native 1080p H.264, validates files, and keeps three HD clips per destination. Failed downloads retain the cache.
-- **A quieter idle screen.** An English clock on a dark ambient background.
+- **A quieter idle screen.** A bold English clock over a muted, darkened nature video. Without the optional video, a dark fallback remains readable.
 - **HDMI shortcut.** The PlayStation destination can open the configured HDMI input. It does not emulate or stream a console.
 
 ![Ambient clock](screenshots/ambient.png)
@@ -89,3 +89,9 @@ See [verification](docs/verification.md), [device cleanup research](docs/debloat
 The images in `screenshots/` are captures of the running interface. `social/` contains English presentation layouts using those captures. A suggested post is in [social/post.txt](social/post.txt).
 
 Code is MIT licensed. Third-party wordmarks and promotional imagery remain the property of their owners and are excluded from that license. See [credits](CREDITS.md).
+
+### Optional nature background
+
+Run `python3 fetch-nature.py` before building (requires FFmpeg). It downloads a real waterfall clip from Mixkit and prepares a muted 1080p local loop. The TV plays it without a Mac or network connection. Video files are excluded from Git.
+
+On some firmware, Home routing can be cleared by an APK update or force-stop. Re-enable the accessibility service after installation, preserving other enabled services; use the full component name `local.tv.cardhome/local.tv.cardhome.HomeGuard`.

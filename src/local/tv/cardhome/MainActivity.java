@@ -36,6 +36,7 @@ public final class MainActivity extends Activity {
     private final Handler clockHandler = new Handler(Looper.getMainLooper());
     private Stage stage;
     private Hero hero;
+    private Dock dock;
     private Header header;
     private MotionPreview preview;
 
@@ -97,8 +98,8 @@ public final class MainActivity extends Activity {
             stage.addView(panel);
         }
         hero=new Hero();stage.addView(hero,0);
-        preview=new MotionPreview(this,(canvas,index,width,height)->drawMark(canvas,panels[index],width*.04f,height*.66f,width*.24f,height*.22f,videoLogoPaint,videoLogoText));
-        stage.addView(preview,1);
+        preview=new MotionPreview(this,(canvas,index,width,height)->drawMark(canvas,panels[index],width*.05f,height*.54f,width*.24f,height*.20f,videoLogoPaint,videoLogoText));
+        stage.addView(preview,1);dock=new Dock();stage.addView(dock,2);
         header=new Header();stage.addView(header);
         settingsButton=new UtilityButton(false);
         stockHomeButton=new UtilityButton(true);
@@ -115,7 +116,7 @@ public final class MainActivity extends Activity {
         float[] start=weights.clone();
         if(!animate) {
             for(int i=0;i<6;i++) weights[i]=i==selected?1:0;
-            stage.invalidate();hero.invalidate(); return;
+            stage.invalidate();hero.invalidate();if(dock!=null)dock.invalidate(); return;
         }
         movement=ValueAnimator.ofFloat(0,1);
         movement.setDuration(360);
@@ -123,7 +124,7 @@ public final class MainActivity extends Activity {
         movement.addUpdateListener(a->{
             float t=(float)a.getAnimatedValue();
             for(int i=0;i<6;i++) weights[i]=start[i]+((i==selected?1f:0f)-start[i])*t;
-            stage.invalidate();hero.invalidate();
+            stage.invalidate();hero.invalidate();if(dock!=null)dock.invalidate();
             for(Panel panel:panels) panel.invalidate();
         });
         movement.start();
@@ -144,7 +145,7 @@ public final class MainActivity extends Activity {
         clockHandler.removeCallbacks(clockTick);
         if(movement!=null) movement.cancel();
         for(int i=0;i<6;i++) weights[i]=i==selected?1:0;
-        if(stage!=null){stage.invalidate();hero.invalidate();for(Panel panel:panels)panel.invalidate();}
+        if(stage!=null){stage.invalidate();hero.invalidate();if(dock!=null)dock.invalidate();for(Panel panel:panels)panel.invalidate();}
         super.onPause();
     }
     @Override protected void onDestroy() {
@@ -229,9 +230,11 @@ public final class MainActivity extends Activity {
         @Override protected void onDraw(Canvas c){
             c.save();c.scale(stage.unit,stage.unit);float width=getWidth()/stage.unit;
             Instant now=Instant.now();ZonedDateTime local=now.atZone(ZoneId.systemDefault());
-            label(c,hour.format(local),26,46,30,0xfff4f6fb);
-            type.setTextSize(22);String day=date.format(local);
-            label(c,day,width-26-type.measureText(day),44,22,0xffa4afc1);
+            label(c,hour.format(local),36,46,30,0xfff4f6fb);
+            type.setShadowLayer(4,0,1,Color.BLACK);
+            type.setTextSize(26);String day=date.format(local);
+            type.setTypeface(Typeface.create("sans-serif-medium",Typeface.NORMAL));
+            label(c,day,width-36-type.measureText(day),44,26,0xfff0f4fb);
             c.restore();
         }
     }
@@ -243,24 +246,26 @@ public final class MainActivity extends Activity {
         @Override protected void onMeasure(int widthSpec,int heightSpec) {
             int w=MeasureSpec.getSize(widthSpec),h=MeasureSpec.getSize(heightSpec);
             setMeasuredDimension(w,h);unit=Math.min(w/1920f,h/1080f);
-            int cardW=Math.round((w-52*unit-5*18*unit-152*unit)/6),cardH=Math.round(132*unit);
+            int cardW=Math.round((w-108*unit-5*18*unit-152*unit)/6),cardH=Math.round(cardW*9f/16f);
             for(Panel panel:panels)panel.measure(MeasureSpec.makeMeasureSpec(cardW,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(cardH,MeasureSpec.EXACTLY));
-            for(View view:new View[]{hero,preview})view.measure(MeasureSpec.makeMeasureSpec(w-Math.round(52*unit),MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(Math.round(826*unit),MeasureSpec.EXACTLY));
+            for(View view:new View[]{hero,preview})view.measure(MeasureSpec.makeMeasureSpec(w,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(h,MeasureSpec.EXACTLY));
+            dock.measure(MeasureSpec.makeMeasureSpec(w,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(h,MeasureSpec.EXACTLY));
             header.measure(MeasureSpec.makeMeasureSpec(w,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(Math.round(64*unit),MeasureSpec.EXACTLY));
             if(saver!=null)saver.measure(MeasureSpec.makeMeasureSpec(w,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(h,MeasureSpec.EXACTLY));
             for(View button:new View[]{settingsButton,stockHomeButton})button.measure(MeasureSpec.makeMeasureSpec(Math.round(58*unit),MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(Math.round(58*unit),MeasureSpec.EXACTLY));
         }
         @Override protected void onLayout(boolean changed,int l,int t,int r,int b) {
-            int x=Math.round(26*unit),y=Math.round(74*unit);
+            int x=0,y=0;
             for(View view:new View[]{hero,preview})view.layout(x,y,x+view.getMeasuredWidth(),y+view.getMeasuredHeight());
             if(saver!=null)saver.layout(0,0,getWidth(),getHeight());
-            preview.radius(38*unit);header.layout(0,0,getWidth(),header.getMeasuredHeight());
+            dock.layout(0,0,getWidth(),getHeight());
+            preview.radius(0);header.layout(0,0,getWidth(),header.getMeasuredHeight());
             for(int i=0;i<6;i++){
-                int px=x+i*(panels[i].getMeasuredWidth()+Math.round(18*unit)),py=Math.round(922*unit);
+                int px=Math.round(54*unit)+i*(panels[i].getMeasuredWidth()+Math.round(18*unit)),py=Math.round(892*unit);
                 panels[i].layout(px,py,px+panels[i].getMeasuredWidth(),py+panels[i].getMeasuredHeight());
             }
-            int size=Math.round(58*unit),by=Math.round(959*unit);
-            int hx=getWidth()-Math.round(28*unit)-size,sx=hx-Math.round(70*unit);
+            int size=Math.round(58*unit),by=Math.round(936*unit);
+            int hx=getWidth()-Math.round(54*unit)-size,sx=hx-Math.round(70*unit);
             settingsButton.layout(sx,by,sx+size,by+size);stockHomeButton.layout(hx,by,hx+size,by+size);
         }
         @Override protected void onSizeChanged(int w,int h,int oldW,int oldH){
@@ -276,6 +281,16 @@ public final class MainActivity extends Activity {
                 ambient.setAlpha(Math.round(weights[i]*255));ambient.setShader(edgeGlow[i]);c.drawRect(0,0,getWidth(),getHeight(),ambient);
                 ambient.setShader(cardGlow[i]);c.drawRect(0,0,getWidth(),getHeight(),ambient);
             }
+        }
+    }
+    private final class Dock extends View {
+        private final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
+        Dock(){super(MainActivity.this);setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);}
+        @Override protected void onDraw(Canvas c){
+            c.save();c.scale(stage.unit,stage.unit);float width=getWidth()/stage.unit;
+            p.setShader(new LinearGradient(0,0,0,140,new int[]{0xaa000000,0x00000000},null,Shader.TileMode.CLAMP));c.drawRect(0,0,width,140,p);p.setShader(null);
+            p.setColor(0xeb101720);c.drawRoundRect(32,874,width-32,1058,30,30,p);
+            p.setColor(0x28ffffff);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(1);c.drawRoundRect(32,874,width-32,1058,30,30,p);p.setStyle(Paint.Style.FILL);c.restore();
         }
     }
     private final class UtilityButton extends View {
@@ -333,8 +348,8 @@ public final class MainActivity extends Activity {
             logo=LOGOS[index]==0?null:BitmapFactory.decodeResource(getResources(),LOGOS[index],options);
             cardLogo=logo;
             try {
-                int[] art={R.drawable.official_youtube,R.drawable.official_prime,R.drawable.official_netflix,R.drawable.official_disney,R.drawable.official_google,R.drawable.official_playstation};
-                official=getDrawable(art[index]);
+                if(index==4||index==5)official=getDrawable(index==4?R.drawable.promo_google:R.drawable.promo_playstation);
+                else {official=getPackageManager().getApplicationBanner(PACKAGES[index]);if(official==null)official=getPackageManager().getApplicationIcon(PACKAGES[index]);}
             } catch(Exception ignored){}
             type.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));
         }
@@ -357,8 +372,7 @@ public final class MainActivity extends Activity {
             // No fabricated brand color, stretching or logo overlay.
             float aw=official==null?cardLogo.getWidth():Math.max(1,official.getIntrinsicWidth());
             float ah=official==null?cardLogo.getHeight():Math.max(1,official.getIntrinsicHeight());
-            float side=Math.min(w-16,h-16);
-            float scale=Math.min(side/aw,side/ah),lw=aw*scale,lh=ah*scale;
+            float scale=Math.min((w-12)/aw,(h-12)/ah),lw=aw*scale,lh=ah*scale;
             RectF tile=new RectF((w-lw)/2,(h-lh)/2,(w+lw)/2,(h+lh)/2);
             Path mask=new Path();mask.addRoundRect(tile,18,18,Path.Direction.CW);
             c.save();c.clipPath(mask);
@@ -387,13 +401,13 @@ public final class MainActivity extends Activity {
             setClipToOutline(true);
             setOutlineProvider(new ViewOutlineProvider(){
                 @Override public void getOutline(View view,Outline outline){
-                    outline.setRoundRect(0,0,getWidth(),getHeight(),38*stage.unit);
+                    outline.setRoundRect(0,0,getWidth(),getHeight(),0);
                 }
             });
         }
         @Override protected void onSizeChanged(int width,int height,int oldWidth,int oldHeight){
             w=width/stage.unit;h=height/stage.unit;
-            bounds.set(0,0,w,h);clip.reset();clip.addRoundRect(bounds,38,38,Path.Direction.CW);
+            bounds.set(0,0,w,h);clip.reset();clip.addRoundRect(bounds,0,0,Path.Direction.CW);
             shade=new LinearGradient(0,h*.20f,0,h,new int[]{0x000b0e12,0xdd0b0e12},null,Shader.TileMode.CLAMP);
             type.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));
             for(int i=0;i<6;i++){images[i]=new RectF();crop(panels[i].background,w,h,i,images[i]);}
@@ -419,7 +433,7 @@ public final class MainActivity extends Activity {
                     imagePaint.setAlpha(255);imagePaint.setShader(null);imagePaint.setColorFilter(null);
                     surface.drawBitmap(panels[i].background,null,imageRect,imagePaint);
                     imagePaint.setShader(gradient);surface.drawRect(area,imagePaint);imagePaint.setShader(null);
-                    drawMark(surface,panels[i],artWidth*.04f,artHeight*.66f,artWidth*.24f,artHeight*.22f,imagePaint,labelPaint);
+                    drawMark(surface,panels[i],artWidth*.05f,artHeight*.54f,artWidth*.24f,artHeight*.20f,imagePaint,labelPaint);
                     frame.setHasAlpha(false);frame.prepareToDraw();
                     post(()->{if(epoch==generation){frames[i]=frame;invalidate();}});
                 }
@@ -442,7 +456,7 @@ public final class MainActivity extends Activity {
                 paint.setShader(null);paint.setColorFilter(null);paint.setStyle(Paint.Style.FILL);paint.setAlpha(255);
                 c.drawBitmap(panels[i].background,null,images[i],paint);
                 paint.setShader(shade);c.drawRect(bounds,paint);paint.setShader(null);
-                drawMark(c,panels[i],w*.04f,h*.66f,w*.24f,h*.22f,paint,type);
+                drawMark(c,panels[i],w*.05f,h*.54f,w*.24f,h*.20f,paint,type);
                 if(layer!=-1)c.restoreToCount(layer);
             }
             c.restore();

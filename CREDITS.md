@@ -14,4 +14,6 @@ Optional runtime upstreams:
 
 Runtime binaries are downloaded locally, not committed or released here. A code license does not replace those upstream licenses.
 
-Dock artwork for all six destinations comes from their publishers’ Google Play listings at 512 × 512. Exact source URLs are in `official-icons.json`. The complete original artwork is fitted into identical square bounds; no fabricated brand background, stretching or logo overlay is added. The icons are shortcut artwork, not a claim that the Google or PlayStation mobile apps run on the TV.
+The four streaming cards use TV banners from installed applications, retaining their original backgrounds and aspect ratios. Google and PlayStation cards use official promotional images from [Google](https://about.google/) and [PlayStation](https://www.playstation.com/en-us/ps4/); exact URLs are in `promotional-art.json`. These shortcuts do not install mobile Google or PlayStation apps.
+
+The optional ambient footage is [Waterfall landscape by Mixkit](https://mixkit.co/free-stock-video/waterfall-landscape-572/), under the [Mixkit Stock Video Free License](https://mixkit.co/license/). The standalone footage is not committed to this repository. Screenshots show it within the launcher interface.

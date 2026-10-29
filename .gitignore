@@ -11,3 +11,5 @@ assets/refresh/ejs.zip
 .env*
 __pycache__/
 .DS_Store
+
+assets/ambient/*.mp4
